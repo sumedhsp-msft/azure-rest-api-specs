@@ -11,6 +11,7 @@ import "@azure-tools/typespec-azure-resource-manager";
 import "../common/models-ref.tsp";
 import "../common/operations.tsp";
 import "./models.tsp";
+import "./vmSharedAttributes.tsp";
 import "./VirtualMachineScaleSet.tsp";
 import "./RollingUpgradeStatusInfo.tsp";
 import "./VirtualMachineScaleSetExtension.tsp";

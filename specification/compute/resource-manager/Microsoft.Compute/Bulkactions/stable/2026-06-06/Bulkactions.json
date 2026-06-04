@@ -1172,40 +1172,6 @@
         }
       }
     },
-    "AdditionalUnattendContent": {
-      "type": "object",
-      "description": "Specifies additional XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup. Contents are defined by setting name, component name, and the pass in which the content is applied.",
-      "properties": {
-        "passName": {
-          "type": "string",
-          "description": "The pass name. Currently, the only allowable value is OobeSystem.",
-          "enum": [
-            "OobeSystem"
-          ],
-          "x-ms-enum": {
-            "modelAsString": false
-          }
-        },
-        "componentName": {
-          "type": "string",
-          "description": "The component name. Currently, the only allowable value is Microsoft-Windows-Shell-Setup.",
-          "enum": [
-            "Microsoft-Windows-Shell-Setup"
-          ],
-          "x-ms-enum": {
-            "modelAsString": false
-          }
-        },
-        "settingName": {
-          "$ref": "#/definitions/SettingNames",
-          "description": "Specifies the name of the setting to which the content applies. Possible values are: FirstLogonCommands and AutoLogon."
-        },
-        "content": {
-          "type": "string",
-          "description": "Specifies the XML formatted content that is added to the unattend.xml file for the specified path and component. The XML must be less than 4KB and must include the root element for the setting or feature that is being inserted."
-        }
-      }
-    },
     "AllInstancesDown": {
       "type": "object",
       "description": "Specifies if Scheduled Events should be auto-approved when all instances are down.",
@@ -1696,6 +1662,420 @@
             "name": "VCpu",
             "value": "VCpu",
             "description": "VCpu is the capacity type for LaunchBulkInstancesOperation where capacity is provisioned in terms of VCpus. If VCpu capacity is not exactly divisible by VCpu count in VMSizes, capacity in VCpus will be overprovisioned by default."
+          }
+        ]
+      }
+    },
+    "Compute.AdditionalUnattendContent": {
+      "type": "object",
+      "description": "Specifies additional XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup. Contents are defined by setting name, component name, and the pass in which the content is applied.",
+      "properties": {
+        "passName": {
+          "$ref": "#/definitions/Compute.PassNames",
+          "description": "The pass name. Currently, the only allowable value is OobeSystem."
+        },
+        "componentName": {
+          "$ref": "#/definitions/Compute.ComponentNames",
+          "description": "The component name. Currently, the only allowable value is Microsoft-Windows-Shell-Setup."
+        },
+        "settingName": {
+          "$ref": "#/definitions/Compute.SettingNames",
+          "description": "Specifies the name of the setting to which the content applies. Possible values are: FirstLogonCommands and AutoLogon."
+        },
+        "content": {
+          "type": "string",
+          "description": "Specifies the XML formatted content that is added to the unattend.xml file for the specified path and component. The XML must be less than 4KB and must include the root element for the setting or feature that is being inserted."
+        }
+      }
+    },
+    "Compute.ComponentNames": {
+      "type": "string",
+      "enum": [
+        "Microsoft-Windows-Shell-Setup"
+      ],
+      "x-ms-enum": {
+        "modelAsString": false
+      },
+      "x-nullable": false
+    },
+    "Compute.LinuxConfiguration": {
+      "type": "object",
+      "description": "Specifies the Linux operating system settings on the virtual machine. For a list of supported Linux distributions, see [Linux on Azure-Endorsed Distributions](https://docs.microsoft.com/azure/virtual-machines/linux/endorsed-distros).",
+      "properties": {
+        "disablePasswordAuthentication": {
+          "type": "boolean",
+          "description": "Specifies whether password authentication should be disabled."
+        },
+        "ssh": {
+          "$ref": "#/definitions/Compute.SshConfiguration",
+          "description": "Specifies the ssh key configuration for a Linux OS."
+        },
+        "provisionVMAgent": {
+          "type": "boolean",
+          "description": "Indicates whether virtual machine agent should be provisioned on the virtual machine. When this property is not specified in the request body, default behavior is to set it to true. This will ensure that VM Agent is installed on the VM so that extensions can be added to the VM later."
+        },
+        "patchSettings": {
+          "$ref": "#/definitions/Compute.LinuxPatchSettings",
+          "description": "[Preview Feature] Specifies settings related to VM Guest Patching on Linux."
+        },
+        "enableVMAgentPlatformUpdates": {
+          "type": "boolean",
+          "description": "Indicates whether VMAgent Platform Updates is enabled for the Linux virtual machine. Default value is false."
+        }
+      }
+    },
+    "Compute.LinuxPatchAssessmentMode": {
+      "type": "string",
+      "description": "Specifies the mode of VM Guest Patch Assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine. <br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true.",
+      "enum": [
+        "ImageDefault",
+        "AutomaticByPlatform"
+      ],
+      "x-ms-enum": {
+        "name": "LinuxPatchAssessmentMode",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "ImageDefault",
+            "value": "ImageDefault"
+          },
+          {
+            "name": "AutomaticByPlatform",
+            "value": "AutomaticByPlatform"
+          }
+        ]
+      }
+    },
+    "Compute.LinuxPatchSettings": {
+      "type": "object",
+      "description": "Specifies settings related to VM Guest Patching on Linux.",
+      "properties": {
+        "patchMode": {
+          "$ref": "#/definitions/Compute.LinuxVMGuestPatchMode",
+          "description": "Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - The virtual machine's default patching configuration is used. <br /><br /> **AutomaticByPlatform** - The virtual machine will be automatically updated by the platform. The property provisionVMAgent must be true"
+        },
+        "assessmentMode": {
+          "$ref": "#/definitions/Compute.LinuxPatchAssessmentMode",
+          "description": "Specifies the mode of VM Guest Patch Assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine. <br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true."
+        },
+        "automaticByPlatformSettings": {
+          "$ref": "#/definitions/Compute.LinuxVMGuestPatchAutomaticByPlatformSettings",
+          "description": "Specifies additional settings for patch mode AutomaticByPlatform in VM Guest Patching on Linux."
+        }
+      }
+    },
+    "Compute.LinuxVMGuestPatchAutomaticByPlatformRebootSetting": {
+      "type": "string",
+      "description": "Specifies the reboot setting for all AutomaticByPlatform patch installation operations.",
+      "enum": [
+        "Unknown",
+        "IfRequired",
+        "Never",
+        "Always"
+      ],
+      "x-ms-enum": {
+        "name": "LinuxVMGuestPatchAutomaticByPlatformRebootSetting",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Unknown",
+            "value": "Unknown"
+          },
+          {
+            "name": "IfRequired",
+            "value": "IfRequired"
+          },
+          {
+            "name": "Never",
+            "value": "Never"
+          },
+          {
+            "name": "Always",
+            "value": "Always"
+          }
+        ]
+      }
+    },
+    "Compute.LinuxVMGuestPatchAutomaticByPlatformSettings": {
+      "type": "object",
+      "description": "Specifies additional settings to be applied when patch mode AutomaticByPlatform is selected in Linux patch settings.",
+      "properties": {
+        "rebootSetting": {
+          "$ref": "#/definitions/Compute.LinuxVMGuestPatchAutomaticByPlatformRebootSetting",
+          "description": "Specifies the reboot setting for all AutomaticByPlatform patch installation operations."
+        },
+        "bypassPlatformSafetyChecksOnUserSchedule": {
+          "type": "boolean",
+          "description": "Enables customer to schedule patching without accidental upgrades"
+        }
+      }
+    },
+    "Compute.LinuxVMGuestPatchMode": {
+      "type": "string",
+      "description": "Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - The virtual machine's default patching configuration is used. <br /><br /> **AutomaticByPlatform** - The virtual machine will be automatically updated by the platform. The property provisionVMAgent must be true",
+      "enum": [
+        "ImageDefault",
+        "AutomaticByPlatform"
+      ],
+      "x-ms-enum": {
+        "name": "LinuxVMGuestPatchMode",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "ImageDefault",
+            "value": "ImageDefault"
+          },
+          {
+            "name": "AutomaticByPlatform",
+            "value": "AutomaticByPlatform"
+          }
+        ]
+      }
+    },
+    "Compute.PassNames": {
+      "type": "string",
+      "enum": [
+        "OobeSystem"
+      ],
+      "x-ms-enum": {
+        "modelAsString": false
+      },
+      "x-nullable": false
+    },
+    "Compute.PatchSettings": {
+      "type": "object",
+      "description": "Specifies settings related to VM Guest Patching on Windows.",
+      "properties": {
+        "patchMode": {
+          "$ref": "#/definitions/Compute.WindowsVMGuestPatchMode",
+          "description": "Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **Manual** - You  control the application of patches to a virtual machine. You do this by applying patches manually inside the VM. In this mode, automatic updates are disabled; the property WindowsConfiguration.enableAutomaticUpdates must be false<br /><br /> **AutomaticByOS** - The virtual machine will automatically be updated by the OS. The property WindowsConfiguration.enableAutomaticUpdates must be true. <br /><br /> **AutomaticByPlatform** - the virtual machine will automatically updated by the platform. The properties provisionVMAgent and WindowsConfiguration.enableAutomaticUpdates must be true"
+        },
+        "enableHotpatching": {
+          "type": "boolean",
+          "description": "Enables customers to patch their Azure VMs without requiring a reboot. For enableHotpatching, the 'provisionVMAgent' must be set to true and 'patchMode' must be set to 'AutomaticByPlatform'."
+        },
+        "assessmentMode": {
+          "$ref": "#/definitions/Compute.WindowsPatchAssessmentMode",
+          "description": "Specifies the mode of VM Guest patch assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine.<br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true."
+        },
+        "automaticByPlatformSettings": {
+          "$ref": "#/definitions/Compute.WindowsVMGuestPatchAutomaticByPlatformSettings",
+          "description": "Specifies additional settings for patch mode AutomaticByPlatform in VM Guest Patching on Windows."
+        }
+      }
+    },
+    "Compute.ProtocolTypes": {
+      "type": "string",
+      "description": "Specifies the protocol of WinRM listener. Possible values are: **http,** **https.**",
+      "enum": [
+        "Http",
+        "Https"
+      ],
+      "x-ms-enum": {
+        "name": "ProtocolTypes",
+        "modelAsString": false
+      }
+    },
+    "Compute.SettingNames": {
+      "type": "string",
+      "description": "Specifies the name of the setting to which the content applies. Possible values are: FirstLogonCommands and AutoLogon.",
+      "enum": [
+        "AutoLogon",
+        "FirstLogonCommands"
+      ],
+      "x-ms-enum": {
+        "name": "SettingNames",
+        "modelAsString": false
+      }
+    },
+    "Compute.SshConfiguration": {
+      "type": "object",
+      "description": "SSH configuration for Linux based VMs running on Azure",
+      "properties": {
+        "publicKeys": {
+          "type": "array",
+          "description": "The list of SSH public keys used to authenticate with linux based VMs.",
+          "items": {
+            "$ref": "#/definitions/Compute.SshPublicKey"
+          },
+          "x-ms-identifiers": [
+            "path"
+          ]
+        }
+      }
+    },
+    "Compute.SshPublicKey": {
+      "type": "object",
+      "description": "Contains information about SSH certificate public key and the path on the Linux VM where the public key is placed.",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Specifies the full path on the created VM where ssh public key is stored. If the file already exists, the specified key is appended to the file. Example: /home/user/.ssh/authorized_keys"
+        },
+        "keyData": {
+          "type": "string",
+          "description": "SSH public key certificate used to authenticate with the VM through ssh. The key needs to be at least 2048-bit and in ssh-rsa format. For creating ssh keys, see [Create SSH keys on Linux and Mac for Linux VMs in Azure]https://docs.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed)."
+        }
+      }
+    },
+    "Compute.WinRMConfiguration": {
+      "type": "object",
+      "description": "Describes Windows Remote Management configuration of the VM",
+      "properties": {
+        "listeners": {
+          "type": "array",
+          "description": "The list of Windows Remote Management listeners",
+          "items": {
+            "$ref": "#/definitions/Compute.WinRMListener"
+          },
+          "x-ms-identifiers": []
+        }
+      }
+    },
+    "Compute.WinRMListener": {
+      "type": "object",
+      "description": "Describes Protocol and thumbprint of Windows Remote Management listener",
+      "properties": {
+        "protocol": {
+          "$ref": "#/definitions/Compute.ProtocolTypes",
+          "description": "Specifies the protocol of WinRM listener. Possible values are: **http,** **https.**"
+        },
+        "certificateUrl": {
+          "type": "string",
+          "description": "This is the URL of a certificate that has been uploaded to Key Vault as a secret. For adding a secret to the Key Vault, see [Add a key or secret to the key vault](https://docs.microsoft.com/azure/key-vault/key-vault-get-started/#add). In this case, your certificate needs to be the Base64 encoding of the following JSON Object which is encoded in UTF-8: <br><br> {<br>  \"data\":\"<Base64-encoded-certificate>\",<br>  \"dataType\":\"pfx\",<br>  \"password\":\"<pfx-file-password>\"<br>} <br> To install certificates on a virtual machine it is recommended to use the [Azure Key Vault virtual machine extension for Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux) or the [Azure Key Vault virtual machine extension for Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows)."
+        }
+      }
+    },
+    "Compute.WindowsConfiguration": {
+      "type": "object",
+      "description": "Specifies Windows operating system settings on the virtual machine.",
+      "properties": {
+        "provisionVMAgent": {
+          "type": "boolean",
+          "description": "Indicates whether virtual machine agent should be provisioned on the virtual machine. When this property is not specified in the request body, it is set to true by default. This will ensure that VM Agent is installed on the VM so that extensions can be added to the VM later."
+        },
+        "enableAutomaticUpdates": {
+          "type": "boolean",
+          "description": "Indicates whether Automatic Updates is enabled for the Windows virtual machine. Default value is true. For virtual machine scale sets, this property can be updated and updates will take effect on OS reprovisioning."
+        },
+        "timeZone": {
+          "type": "string",
+          "description": "Specifies the time zone of the virtual machine. e.g. \"Pacific Standard Time\". Possible values can be [TimeZoneInfo.Id](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.id?#System_TimeZoneInfo_Id) value from time zones returned by [TimeZoneInfo.GetSystemTimeZones](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones)."
+        },
+        "additionalUnattendContent": {
+          "type": "array",
+          "description": "Specifies additional base-64 encoded XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup.",
+          "items": {
+            "$ref": "#/definitions/Compute.AdditionalUnattendContent"
+          },
+          "x-ms-identifiers": []
+        },
+        "patchSettings": {
+          "$ref": "#/definitions/Compute.PatchSettings",
+          "description": "[Preview Feature] Specifies settings related to VM Guest Patching on Windows."
+        },
+        "winRM": {
+          "$ref": "#/definitions/Compute.WinRMConfiguration",
+          "description": "Specifies the Windows Remote Management listeners. This enables remote Windows PowerShell."
+        },
+        "enableVMAgentPlatformUpdates": {
+          "type": "boolean",
+          "description": "Indicates whether VMAgent Platform Updates are enabled for the Windows Virtual Machine.",
+          "readOnly": true
+        }
+      }
+    },
+    "Compute.WindowsPatchAssessmentMode": {
+      "type": "string",
+      "description": "Specifies the mode of VM Guest patch assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine.<br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true.",
+      "enum": [
+        "ImageDefault",
+        "AutomaticByPlatform"
+      ],
+      "x-ms-enum": {
+        "name": "WindowsPatchAssessmentMode",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "ImageDefault",
+            "value": "ImageDefault"
+          },
+          {
+            "name": "AutomaticByPlatform",
+            "value": "AutomaticByPlatform"
+          }
+        ]
+      }
+    },
+    "Compute.WindowsVMGuestPatchAutomaticByPlatformRebootSetting": {
+      "type": "string",
+      "description": "Specifies the reboot setting for all AutomaticByPlatform patch installation operations.",
+      "enum": [
+        "Unknown",
+        "IfRequired",
+        "Never",
+        "Always"
+      ],
+      "x-ms-enum": {
+        "name": "WindowsVMGuestPatchAutomaticByPlatformRebootSetting",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Unknown",
+            "value": "Unknown"
+          },
+          {
+            "name": "IfRequired",
+            "value": "IfRequired"
+          },
+          {
+            "name": "Never",
+            "value": "Never"
+          },
+          {
+            "name": "Always",
+            "value": "Always"
+          }
+        ]
+      }
+    },
+    "Compute.WindowsVMGuestPatchAutomaticByPlatformSettings": {
+      "type": "object",
+      "description": "Specifies additional settings to be applied when patch mode AutomaticByPlatform is selected in Windows patch settings.",
+      "properties": {
+        "rebootSetting": {
+          "$ref": "#/definitions/Compute.WindowsVMGuestPatchAutomaticByPlatformRebootSetting",
+          "description": "Specifies the reboot setting for all AutomaticByPlatform patch installation operations."
+        },
+        "bypassPlatformSafetyChecksOnUserSchedule": {
+          "type": "boolean",
+          "description": "Enables customer to schedule patching without accidental upgrades"
+        }
+      }
+    },
+    "Compute.WindowsVMGuestPatchMode": {
+      "type": "string",
+      "description": "Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **Manual** - You  control the application of patches to a virtual machine. You do this by applying patches manually inside the VM. In this mode, automatic updates are disabled; the property WindowsConfiguration.enableAutomaticUpdates must be false<br /><br /> **AutomaticByOS** - The virtual machine will automatically be updated by the OS. The property WindowsConfiguration.enableAutomaticUpdates must be true. <br /><br /> **AutomaticByPlatform** - the virtual machine will automatically updated by the platform. The properties provisionVMAgent and WindowsConfiguration.enableAutomaticUpdates must be true",
+      "enum": [
+        "Manual",
+        "AutomaticByOS",
+        "AutomaticByPlatform"
+      ],
+      "x-ms-enum": {
+        "name": "WindowsVMGuestPatchMode",
+        "modelAsString": true,
+        "values": [
+          {
+            "name": "Manual",
+            "value": "Manual"
+          },
+          {
+            "name": "AutomaticByOS",
+            "value": "AutomaticByOS"
+          },
+          {
+            "name": "AutomaticByPlatform",
+            "value": "AutomaticByPlatform"
           }
         ]
       }
@@ -2804,148 +3184,6 @@
         "computeProfile"
       ]
     },
-    "LinuxConfiguration": {
-      "type": "object",
-      "description": "Specifies the Linux operating system settings on the virtual machine. For a list of supported Linux distributions, see [Linux on Azure-Endorsed Distributions](https://docs.microsoft.com/azure/virtual-machines/linux/endorsed-distros).",
-      "properties": {
-        "disablePasswordAuthentication": {
-          "type": "boolean",
-          "description": "Specifies whether password authentication should be disabled."
-        },
-        "ssh": {
-          "$ref": "#/definitions/SshConfiguration",
-          "description": "Specifies the ssh key configuration for a Linux OS."
-        },
-        "provisionVMAgent": {
-          "type": "boolean",
-          "description": "Indicates whether virtual machine agent should be provisioned on the virtual machine. When this property is not specified in the request body, default behavior is to set it to true. This will ensure that VM Agent is installed on the VM so that extensions can be added to the VM later."
-        },
-        "patchSettings": {
-          "$ref": "#/definitions/LinuxPatchSettings",
-          "description": "[Preview Feature] Specifies settings related to VM Guest Patching on Linux."
-        },
-        "enableVMAgentPlatformUpdates": {
-          "type": "boolean",
-          "description": "Indicates whether VMAgent Platform Updates is enabled for the Linux virtual machine. Default value is false."
-        }
-      }
-    },
-    "LinuxPatchAssessmentMode": {
-      "type": "string",
-      "description": "Specifies the mode of VM Guest Patch Assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine. <br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true.",
-      "enum": [
-        "ImageDefault",
-        "AutomaticByPlatform"
-      ],
-      "x-ms-enum": {
-        "name": "LinuxPatchAssessmentMode",
-        "modelAsString": true,
-        "values": [
-          {
-            "name": "ImageDefault",
-            "value": "ImageDefault",
-            "description": "ImageDefault mode"
-          },
-          {
-            "name": "AutomaticByPlatform",
-            "value": "AutomaticByPlatform",
-            "description": "AutomaticByPlatform mode"
-          }
-        ]
-      }
-    },
-    "LinuxPatchSettings": {
-      "type": "object",
-      "description": "Specifies settings related to VM Guest Patching on Linux.",
-      "properties": {
-        "patchMode": {
-          "$ref": "#/definitions/LinuxVMGuestPatchMode",
-          "description": "Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - The virtual machine's default patching configuration is used. <br /><br /> **AutomaticByPlatform** - The virtual machine will be automatically updated by the platform. The property provisionVMAgent must be true"
-        },
-        "assessmentMode": {
-          "$ref": "#/definitions/LinuxPatchAssessmentMode",
-          "description": "Specifies the mode of VM Guest Patch Assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine. <br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true."
-        },
-        "automaticByPlatformSettings": {
-          "$ref": "#/definitions/LinuxVMGuestPatchAutomaticByPlatformSettings",
-          "description": "Specifies additional settings for patch mode AutomaticByPlatform in VM Guest Patching on Linux."
-        }
-      }
-    },
-    "LinuxVMGuestPatchAutomaticByPlatformRebootSetting": {
-      "type": "string",
-      "description": "Specifies the reboot setting for all AutomaticByPlatform patch installation operations.",
-      "enum": [
-        "Unknown",
-        "IfRequired",
-        "Never",
-        "Always"
-      ],
-      "x-ms-enum": {
-        "name": "LinuxVMGuestPatchAutomaticByPlatformRebootSetting",
-        "modelAsString": true,
-        "values": [
-          {
-            "name": "Unknown",
-            "value": "Unknown",
-            "description": "Unknown reboot setting"
-          },
-          {
-            "name": "IfRequired",
-            "value": "IfRequired",
-            "description": "Reboot if required"
-          },
-          {
-            "name": "Never",
-            "value": "Never",
-            "description": "Never reboot"
-          },
-          {
-            "name": "Always",
-            "value": "Always",
-            "description": "Always reboot"
-          }
-        ]
-      }
-    },
-    "LinuxVMGuestPatchAutomaticByPlatformSettings": {
-      "type": "object",
-      "description": "Specifies additional settings to be applied when patch mode AutomaticByPlatform is selected in Linux patch settings.",
-      "properties": {
-        "rebootSetting": {
-          "$ref": "#/definitions/LinuxVMGuestPatchAutomaticByPlatformRebootSetting",
-          "description": "Specifies the reboot setting for all AutomaticByPlatform patch installation operations."
-        },
-        "bypassPlatformSafetyChecksOnUserSchedule": {
-          "type": "boolean",
-          "description": "Enables customer to schedule patching without accidental upgrades"
-        }
-      }
-    },
-    "LinuxVMGuestPatchMode": {
-      "type": "string",
-      "description": "Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - The virtual machine's default patching configuration is used. <br /><br /> **AutomaticByPlatform** - The virtual machine will be automatically updated by the platform. The property provisionVMAgent must be true",
-      "enum": [
-        "ImageDefault",
-        "AutomaticByPlatform"
-      ],
-      "x-ms-enum": {
-        "name": "LinuxVMGuestPatchMode",
-        "modelAsString": true,
-        "values": [
-          {
-            "name": "ImageDefault",
-            "value": "ImageDefault",
-            "description": "ImageDefault linux VM guest patch mode"
-          },
-          {
-            "name": "AutomaticByPlatform",
-            "value": "AutomaticByPlatform",
-            "description": "AutomaticByPlatform linux VM guest patch mode"
-          }
-        ]
-      }
-    },
     "LocalStorageDiskType": {
       "type": "string",
       "description": "Local storage disk types supported by Azure VMs.",
@@ -3331,11 +3569,11 @@
           "description": "Specifies a base-64 encoded string of custom data. The base-64 encoded string is decoded to a binary array that is saved as a file on the Virtual Machine. The maximum length of the binary array is 65535 bytes. **Note: Do not pass any secrets or passwords in customData property.** This property cannot be updated after the VM is created. The property 'customData' is passed to the VM to be saved as a file, for more information see [Custom Data on Azure VMs](https://azure.microsoft.com/blog/custom-data-and-cloud-init-on-windows-azure/). For using cloud-init for your Linux VM, see [Using cloud-init to customize a Linux VM during creation](https://docs.microsoft.com/azure/virtual-machines/linux/using-cloud-init)."
         },
         "windowsConfiguration": {
-          "$ref": "#/definitions/WindowsConfiguration",
+          "$ref": "#/definitions/Compute.WindowsConfiguration",
           "description": "Specifies Windows operating system settings on the virtual machine."
         },
         "linuxConfiguration": {
-          "$ref": "#/definitions/LinuxConfiguration",
+          "$ref": "#/definitions/Compute.LinuxConfiguration",
           "description": "Specifies the Linux operating system settings on the virtual machine. For a list of supported Linux distributions, see [Linux on Azure-Endorsed Distributions](https://docs.microsoft.com/azure/virtual-machines/linux/endorsed-distros)."
         },
         "secrets": {
@@ -3422,28 +3660,6 @@
         ]
       }
     },
-    "PatchSettings": {
-      "type": "object",
-      "description": "Specifies settings related to VM Guest Patching on Windows.",
-      "properties": {
-        "patchMode": {
-          "$ref": "#/definitions/WindowsVMGuestPatchMode",
-          "description": "Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **Manual** - You  control the application of patches to a virtual machine. You do this by applying patches manually inside the VM. In this mode, automatic updates are disabled; the property WindowsConfiguration.enableAutomaticUpdates must be false<br /><br /> **AutomaticByOS** - The virtual machine will automatically be updated by the OS. The property WindowsConfiguration.enableAutomaticUpdates must be true. <br /><br /> **AutomaticByPlatform** - the virtual machine will automatically updated by the platform. The properties provisionVMAgent and WindowsConfiguration.enableAutomaticUpdates must be true"
-        },
-        "enableHotpatching": {
-          "type": "boolean",
-          "description": "Enables customers to patch their Azure VMs without requiring a reboot. For enableHotpatching, the 'provisionVMAgent' must be set to true and 'patchMode' must be set to 'AutomaticByPlatform'."
-        },
-        "assessmentMode": {
-          "$ref": "#/definitions/WindowsPatchAssessmentMode",
-          "description": "Specifies the mode of VM Guest patch assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine.<br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true."
-        },
-        "automaticByPlatformSettings": {
-          "$ref": "#/definitions/WindowsVMGuestPatchAutomaticByPlatformSettings",
-          "description": "Specifies additional settings for patch mode AutomaticByPlatform in VM Guest Patching on Windows."
-        }
-      }
-    },
     "Placement": {
       "type": "object",
       "description": "Describes the user-defined constraints for resource hardware placement.",
@@ -3511,30 +3727,6 @@
             "name": "Spot",
             "value": "Spot",
             "description": "Spot priority VMs"
-          }
-        ]
-      }
-    },
-    "ProtocolTypes": {
-      "type": "string",
-      "description": "Specifies the protocol of WinRM listener. Possible values are: **http,** **https.**",
-      "enum": [
-        "Http",
-        "Https"
-      ],
-      "x-ms-enum": {
-        "name": "ProtocolTypes",
-        "modelAsString": true,
-        "values": [
-          {
-            "name": "Http",
-            "value": "Http",
-            "description": "Http protocol"
-          },
-          {
-            "name": "Https",
-            "value": "Https",
-            "description": "Https protocol"
           }
         ]
       }
@@ -4335,60 +4527,6 @@
             "description": "ConfidentialVM security type"
           }
         ]
-      }
-    },
-    "SettingNames": {
-      "type": "string",
-      "description": "Specifies the name of the setting to which the content applies. Possible values are: FirstLogonCommands and AutoLogon.",
-      "enum": [
-        "AutoLogon",
-        "FirstLogonCommands"
-      ],
-      "x-ms-enum": {
-        "name": "SettingNames",
-        "modelAsString": true,
-        "values": [
-          {
-            "name": "AutoLogon",
-            "value": "AutoLogon",
-            "description": "AutoLogon mode"
-          },
-          {
-            "name": "FirstLogonCommands",
-            "value": "FirstLogonCommands",
-            "description": "FirstLogonCommands mode"
-          }
-        ]
-      }
-    },
-    "SshConfiguration": {
-      "type": "object",
-      "description": "SSH configuration for Linux based VMs running on Azure",
-      "properties": {
-        "publicKeys": {
-          "type": "array",
-          "description": "The list of SSH public keys used to authenticate with linux based VMs.",
-          "items": {
-            "$ref": "#/definitions/SshPublicKey"
-          },
-          "x-ms-identifiers": [
-            "path"
-          ]
-        }
-      }
-    },
-    "SshPublicKey": {
-      "type": "object",
-      "description": "Contains information about SSH certificate public key and the path on the Linux VM where the public key is placed.",
-      "properties": {
-        "path": {
-          "type": "string",
-          "description": "Specifies the full path on the created VM where ssh public key is stored. If the file already exists, the specified key is appended to the file. Example: /home/user/.ssh/authorized_keys"
-        },
-        "keyData": {
-          "type": "string",
-          "description": "SSH public key certificate used to authenticate with the VM through ssh. The key needs to be at least 2048-bit and in ssh-rsa format. For creating ssh keys, see [Create SSH keys on Linux and Mac for Linux VMs in Azure]https://docs.microsoft.com/azure/virtual-machines/linux/create-ssh-keys-detailed)."
-        }
       }
     },
     "StartResourceOperationResponse": {
@@ -5373,172 +5511,6 @@
           "format": "int32",
           "description": "Specifies the vCPU to physical core ratio. When this property is not specified in the request body the default behavior is set to the value of vCPUsPerCore for the VM Size exposed in api response of [List all available virtual machine sizes in a region](https://docs.microsoft.com/en-us/rest/api/compute/resource-skus/list). **Setting this property to 1 also means that hyper-threading is disabled.**"
         }
-      }
-    },
-    "WinRMConfiguration": {
-      "type": "object",
-      "description": "Describes Windows Remote Management configuration of the VM",
-      "properties": {
-        "listeners": {
-          "type": "array",
-          "description": "The list of Windows Remote Management listeners",
-          "items": {
-            "$ref": "#/definitions/WinRMListener"
-          },
-          "x-ms-identifiers": []
-        }
-      }
-    },
-    "WinRMListener": {
-      "type": "object",
-      "description": "Describes Protocol and thumbprint of Windows Remote Management listener",
-      "properties": {
-        "protocol": {
-          "$ref": "#/definitions/ProtocolTypes",
-          "description": "Specifies the protocol of WinRM listener. Possible values are: **http,** **https.**"
-        },
-        "certificateUrl": {
-          "type": "string",
-          "description": "This is the URL of a certificate that has been uploaded to Key Vault as a secret. For adding a secret to the Key Vault, see [Add a key or secret to the key vault](https://docs.microsoft.com/azure/key-vault/key-vault-get-started/#add). In this case, your certificate needs to be the Base64 encoding of the following JSON Object which is encoded in UTF-8: <br><br> {<br>  \"data\":\"<Base64-encoded-certificate>\",<br>  \"dataType\":\"pfx\",<br>  \"password\":\"<pfx-file-password>\"<br>} <br> To install certificates on a virtual machine it is recommended to use the [Azure Key Vault virtual machine extension for Linux](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-linux) or the [Azure Key Vault virtual machine extension for Windows](https://docs.microsoft.com/azure/virtual-machines/extensions/key-vault-windows)."
-        }
-      }
-    },
-    "WindowsConfiguration": {
-      "type": "object",
-      "description": "Specifies Windows operating system settings on the virtual machine.",
-      "properties": {
-        "provisionVMAgent": {
-          "type": "boolean",
-          "description": "Indicates whether virtual machine agent should be provisioned on the virtual machine. When this property is not specified in the request body, it is set to true by default. This will ensure that VM Agent is installed on the VM so that extensions can be added to the VM later."
-        },
-        "enableAutomaticUpdates": {
-          "type": "boolean",
-          "description": "Indicates whether Automatic Updates is enabled for the Windows virtual machine. Default value is true. For virtual machine scale sets, this property can be updated and updates will take effect on OS reprovisioning."
-        },
-        "timeZone": {
-          "type": "string",
-          "description": "Specifies the time zone of the virtual machine. e.g. \"Pacific Standard Time\". Possible values can be [TimeZoneInfo.Id](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.id?#System_TimeZoneInfo_Id) value from time zones returned by [TimeZoneInfo.GetSystemTimeZones](https://docs.microsoft.com/dotnet/api/system.timezoneinfo.getsystemtimezones)."
-        },
-        "additionalUnattendContent": {
-          "type": "array",
-          "description": "Specifies additional base-64 encoded XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup.",
-          "items": {
-            "$ref": "#/definitions/AdditionalUnattendContent"
-          },
-          "x-ms-identifiers": []
-        },
-        "patchSettings": {
-          "$ref": "#/definitions/PatchSettings",
-          "description": "[Preview Feature] Specifies settings related to VM Guest Patching on Windows."
-        },
-        "winRM": {
-          "$ref": "#/definitions/WinRMConfiguration",
-          "description": "Specifies the Windows Remote Management listeners. This enables remote Windows PowerShell."
-        }
-      }
-    },
-    "WindowsPatchAssessmentMode": {
-      "type": "string",
-      "description": "Specifies the mode of VM Guest patch assessment for the IaaS virtual machine.<br /><br /> Possible values are:<br /><br /> **ImageDefault** - You control the timing of patch assessments on a virtual machine.<br /><br /> **AutomaticByPlatform** - The platform will trigger periodic patch assessments. The property provisionVMAgent must be true.",
-      "enum": [
-        "ImageDefault",
-        "AutomaticByPlatform"
-      ],
-      "x-ms-enum": {
-        "name": "WindowsPatchAssessmentMode",
-        "modelAsString": true,
-        "values": [
-          {
-            "name": "ImageDefault",
-            "value": "ImageDefault",
-            "description": "ImageDefault patch assessment mode"
-          },
-          {
-            "name": "AutomaticByPlatform",
-            "value": "AutomaticByPlatform",
-            "description": "AutomaticByPlatform patch assessment mode"
-          }
-        ]
-      }
-    },
-    "WindowsVMGuestPatchAutomaticByPlatformRebootSetting": {
-      "type": "string",
-      "description": "Specifies the reboot setting for all AutomaticByPlatform patch installation operations.",
-      "enum": [
-        "Unknown",
-        "IfRequired",
-        "Never",
-        "Always"
-      ],
-      "x-ms-enum": {
-        "name": "WindowsVMGuestPatchAutomaticByPlatformRebootSetting",
-        "modelAsString": true,
-        "values": [
-          {
-            "name": "Unknown",
-            "value": "Unknown",
-            "description": "Reboot setting for Unknown"
-          },
-          {
-            "name": "IfRequired",
-            "value": "IfRequired",
-            "description": "Reboot setting for IfRequired"
-          },
-          {
-            "name": "Never",
-            "value": "Never",
-            "description": "Reboot setting for Never"
-          },
-          {
-            "name": "Always",
-            "value": "Always",
-            "description": "Reboot setting for Always"
-          }
-        ]
-      }
-    },
-    "WindowsVMGuestPatchAutomaticByPlatformSettings": {
-      "type": "object",
-      "description": "Specifies additional settings to be applied when patch mode AutomaticByPlatform is selected in Windows patch settings.",
-      "properties": {
-        "rebootSetting": {
-          "$ref": "#/definitions/WindowsVMGuestPatchAutomaticByPlatformRebootSetting",
-          "description": "Specifies the reboot setting for all AutomaticByPlatform patch installation operations."
-        },
-        "bypassPlatformSafetyChecksOnUserSchedule": {
-          "type": "boolean",
-          "description": "Enables customer to schedule patching without accidental upgrades"
-        }
-      }
-    },
-    "WindowsVMGuestPatchMode": {
-      "type": "string",
-      "description": "Specifies the mode of VM Guest Patching to IaaS virtual machine or virtual machines associated to virtual machine scale set with OrchestrationMode as Flexible.<br /><br /> Possible values are:<br /><br /> **Manual** - You  control the application of patches to a virtual machine. You do this by applying patches manually inside the VM. In this mode, automatic updates are disabled; the property WindowsConfiguration.enableAutomaticUpdates must be false<br /><br /> **AutomaticByOS** - The virtual machine will automatically be updated by the OS. The property WindowsConfiguration.enableAutomaticUpdates must be true. <br /><br /> **AutomaticByPlatform** - the virtual machine will automatically updated by the platform. The properties provisionVMAgent and WindowsConfiguration.enableAutomaticUpdates must be true",
-      "enum": [
-        "Manual",
-        "AutomaticByOS",
-        "AutomaticByPlatform"
-      ],
-      "x-ms-enum": {
-        "name": "WindowsVMGuestPatchMode",
-        "modelAsString": true,
-        "values": [
-          {
-            "name": "Manual",
-            "value": "Manual",
-            "description": "Manual VM guest patch mode"
-          },
-          {
-            "name": "AutomaticByOS",
-            "value": "AutomaticByOS",
-            "description": "AutomaticByOS VM guest patch mode"
-          },
-          {
-            "name": "AutomaticByPlatform",
-            "value": "AutomaticByPlatform",
-            "description": "AutomaticByPlatform VM guest patch mode"
-          }
-        ]
       }
     },
     "ZoneAllocationPolicy": {
