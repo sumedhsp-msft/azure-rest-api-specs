@@ -113,23 +113,6 @@ union EvictionPolicy {
   string,
 }
 
-@doc("Distribution strategies for LaunchBulkInstancesOperation zone allocation policy.")
-union ZoneDistributionStrategy {
-  @doc("Default. Launch instances in a single zone based on best effort. If capacity is not available, LaunchBulkInstancesOperation can allocate capacity in different zones.")
-  BestEffortSingleZone: "BestEffortSingleZone",
-
-  @doc("Launch instances based on zone preferences. Higher priority zones are filled first before allocating to lower priority zones.")
-  Prioritized: "Prioritized",
-
-  @doc("Balance launching instances across zones specified based on best effort. If capacity is not available, LaunchBulkInstancesOperation can deviate balancing across all zones.")
-  BestEffortBalanced: "BestEffortBalanced",
-
-  @doc("Launch instances across all provided zones, ensuring the difference between any two zones is no more than one instance.")
-  StrictBalanced: "StrictBalanced",
-
-  string,
-}
-
 @doc("Virtual Machine operation status values.")
 union VMOperationStatus {
   @doc("Indicates that the virtual machine is either in the process of being created or is scheduled to be created.")
